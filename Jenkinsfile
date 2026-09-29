@@ -29,7 +29,23 @@ pipeline {
 
         stage('Test Backend') {
             steps {
-                sh 'curl -f http://localhost:8081/equipe/all'
+                sh '''
+                    echo "Waiting for backend to start..."
+
+                    for i in {1..30}; do
+                        if curl -s -f http://localhost:8081/equipe/all > /dev/null; then
+                            echo "Backend is ready!"
+                            exit 0
+                        fi
+
+                        echo "Backend not ready yet... waiting 2 seconds"
+                        sleep 2
+                    done
+
+                    echo "Backend failed to become ready."
+                    docker compose logs backend
+                    exit 1
+                '''
             }
         }
     }
@@ -40,3 +56,4 @@ pipeline {
         }
     }
 }
+
