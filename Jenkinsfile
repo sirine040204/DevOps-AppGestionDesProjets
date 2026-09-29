@@ -32,7 +32,9 @@ pipeline {
                 sh '''
                     echo "Waiting for backend to start..."
 
-                    for i in {1..30}; do
+                    i=1
+
+                    while [ $i -le 30 ]; do
                         if curl -s -f http://localhost:8081/equipe/all > /dev/null; then
                             echo "Backend is ready!"
                             exit 0
@@ -40,6 +42,7 @@ pipeline {
 
                         echo "Backend not ready yet... waiting 2 seconds"
                         sleep 2
+                        i=$((i + 1))
                     done
 
                     echo "Backend failed to become ready."
@@ -56,4 +59,3 @@ pipeline {
         }
     }
 }
-
